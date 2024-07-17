@@ -31,7 +31,7 @@ def imageprepare(file):
     newImage.paste(img, (wleft, 4))  # paste resized image on white canvas
 
   #to view the image
-  #plt.imshow(newImage)
+  #plt.imshow(newImage,cmap="binary")
   #plt.show()
 
   tv = list(newImage.getdata())  # get pixel values
