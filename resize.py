@@ -1,7 +1,11 @@
 from PIL import Image, ImageFilter
+import torch
+import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 
-def imageprepare(file):
+transform = transforms.Compose([transforms.PILToTensor()])
+
+def ImagePrep(file):
   """
   This function returns the pixel values.
   The imput is a png file location.
@@ -34,13 +38,19 @@ def imageprepare(file):
   #plt.imshow(newImage,cmap="binary")
   #plt.show()
 
-  tv = list(newImage.getdata())  # get pixel values
+  TT = transform(newImage)
+  TT = (255-TT)*1.0 / 255.0
+  return torch.unsqueeze(TT,0)
 
+  
+  """
+  tv = list(newImage.getdata())  # get pixel values
   # normalize pixels to 0 and 1. 0 is pure white, 1 is pure black.
   tva = [(255 - x) * 1.0 / 255.0 for x in tv]
   #print(tva)
   return tva
+  """
 
-#x=imageprepare('testing-zoom.png')#file path here
-#print(len(x))# mnist IMAGES are 28x28=784 pixels
+#x = ImagePrep('testing-zoom.png')#file path here
+#print(x.shape)# mnist IMAGES are 28x28=784 pixels
 

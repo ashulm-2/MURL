@@ -1,4 +1,4 @@
-import torch as T
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class CNN(nn.Module):
-  def __init__(self, lr, epochs, batch_size, num_classes=10):
+  def __init__(self, lr=0.001, epochs=25, batch_size=128, num_classes=10):
     super(CNN, self).__init__()
     self.epochs = epochs
     self.lr = lr
@@ -16,7 +16,7 @@ class CNN(nn.Module):
     self.num_classes = num_classes
     self.loss_history = []
     self.acc_history = []
-    self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
+    self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     self.conv1 = nn.Conv2d(1, 32, 3)
     self.bn1 = nn.BatchNorm2d(32)
     self.conv2 = nn.Conv2d(32, 32, 3)
@@ -43,7 +43,7 @@ class CNN(nn.Module):
     self.get_data()
 
   def calc_input_dims(self):
-    batch_data = T.zeros((1, 1, 28, 28))
+    batch_data = torch.zeros((1, 1, 28, 28))
     batch_data = self.conv1(batch_data)
     #batch_data = self.bn1(batch_data)
     batch_data = self.conv2(batch_data)
@@ -59,7 +59,7 @@ class CNN(nn.Module):
     return int(np.prod(batch_data.size()))
 
   def forward(self, batch_data):
-    batch_data = T.tensor(batch_data).to(self.device)
+    batch_data = torch.tensor(batch_data).to(self.device)
 
     batch_data = self.conv1(batch_data)
     batch_data = self.bn1(batch_data)
@@ -99,13 +99,13 @@ class CNN(nn.Module):
   def get_data(self):
     mnist_train_data = MNIST('mnist', train=True,
                              download=True, transform=ToTensor())
-    self.train_data_loader = T.utils.data.DataLoader(mnist_train_data,
+    self.train_data_loader = torch.utils.data.DataLoader(mnist_train_data,
                                                 batch_size=self.batch_size,
                                                 shuffle=True,
                                                 num_workers=8)
     mnist_test_data = MNIST('mnist', train=False,
                              download=True, transform=ToTensor())
-    self.test_data_loader = T.utils.data.DataLoader(mnist_test_data,
+    self.test_data_loader = torch.utils.data.DataLoader(mnist_test_data,
                                                 batch_size=self.batch_size,
                                                 shuffle=True,
                                                 num_workers=8)          
@@ -121,11 +121,11 @@ class CNN(nn.Module):
         prediction = self.forward(input)
         loss = self.loss(prediction, label)
         prediction = F.softmax(prediction, dim=1)
-        classes = T.argmax(prediction, dim=1)
-        wrong = T.where(classes != label,
-                        T.tensor([1.]).to(self.device),
-                        T.tensor([0.]).to(self.device))
-        acc = 1 - T.sum(wrong) / self.batch_size
+        classes = torch.argmax(prediction, dim=1)
+        wrong = torch.where(classes != label,
+                        torch.tensor([1.]).to(self.device),
+                        torch.tensor([0.]).to(self.device))
+        acc = 1 - torch.sum(wrong) / self.batch_size
 
         ep_acc.append(acc.item())
         self.acc_history.append(acc.item())
@@ -146,11 +146,11 @@ class CNN(nn.Module):
       prediction = self.forward(input)
       loss = self.loss(prediction, label)
       prediction = F.softmax(prediction, dim=1)
-      classes = T.argmax(prediction, dim=1)
-      wrong = T.where(classes != label,
-                      T.tensor([1.]).to(self.device),
-                      T.tensor([0.]).to(self.device))
-      acc = 1 - T.sum(wrong) / self.batch_size
+      classes = torch.argmax(prediction, dim=1)
+      wrong = torch.where(classes != label,
+                      torch.tensor([1.]).to(self.device),
+                      torch.tensor([0.]).to(self.device))
+      acc = 1 - torch.sum(wrong) / self.batch_size
 
       ep_acc.append(acc.item())
 
@@ -159,13 +159,14 @@ class CNN(nn.Module):
     print('total loss %.3f' % ep_loss,
                 'accuracy %.3f' % np.mean(ep_acc))
 
-
+"""
 if __name__ == '__main__':
-  network = CNN(lr=0.001, batch_size=128, epochs=5)
+  network = CNN(lr=0.001, batch_size=128, epochs=25)
   network._train()
-  T.save(network.state_dict(),"CNN-weights.pt")
-  plt.plot(network.loss_history)
-  plt.show()
-  plt.plot(network.acc_history)
-  plt.show()
+  torch.save(network.state_dict(),"CNN-weights.pt")
+  pltorch.plot(network.loss_history)
+  pltorch.show()
+  pltorch.plot(network.acc_history)
+  pltorch.show()
   network._test()
+"""
