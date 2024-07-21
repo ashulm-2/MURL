@@ -5,6 +5,69 @@ import matplotlib.pyplot as plt
 
 transform = transforms.Compose([transforms.PILToTensor()])
 
+def CropImage(file):
+  im = Image.open(file).convert('L') #opens in grayscale
+  width,height = im.size
+  print(width,height)
+  #im.show()
+  PixIm = im.load()
+
+  #first we trim the left
+  Found = False
+  for x in range(width):
+    for y in range(height):
+      if PixIm[x,y] < 200:
+        Found = True
+        break
+    if Found:
+      TrimLeft = x
+      break
+  
+  #now we trim the right
+  Found = False
+  for x in range(width-1,0,-1):
+    for y in range(height-1,0,-1):
+      if PixIm[x,y] < 200:
+        Found = True
+        break
+    if Found:
+      TrimRight = x
+      break
+
+
+  #first we trim the top
+  Found = False
+  for y in range(height):
+    for x in range(width): 
+      if PixIm[x,y] < 200:
+        Found = True
+        break
+    if Found:
+      TrimTop = y
+      break
+  
+  #now we trim the bottom
+  Found = False
+  for y in range(height-1,0,-1):
+    for x in range(width-1,0,-1):
+      if PixIm[x,y] < 200:
+        Found = True
+        break
+    if Found:
+      TrimBottom = y
+      break
+  
+
+  im1 = im.crop((TrimLeft,TrimTop,TrimRight,TrimBottom))
+  im1.save("trimmed-" + file)
+  #im1.show()
+        
+
+CropImage("testing3.png")
+
+
+
+
 def ImagePrep(file):
   """
   This function returns the pixel values.
