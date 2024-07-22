@@ -2,14 +2,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torchvision.datasets import MNIST
+from torchvision.datasets import EMNIST
 from torchvision.transforms import ToTensor
 import numpy as np
 import matplotlib.pyplot as plt
 
-class CNN(nn.Module):
-  def __init__(self, lr=0.001, epochs=25, batch_size=128, num_classes=10):
-    super(CNN, self).__init__()
+class CNNE(nn.Module):
+  def __init__(self, lr=0.001, epochs=25, batch_size=128, num_classes=62):
+    super(CNNE, self).__init__()
     self.epochs = epochs
     self.lr = lr
     self.batch_size = batch_size
@@ -97,13 +97,13 @@ class CNN(nn.Module):
 
 
   def get_data(self):
-    mnist_train_data = MNIST('mnist', train=True,
+    mnist_train_data = EMNIST('emnist', split="byclass", train=True,
                              download=True, transform=ToTensor())
     self.train_data_loader = torch.utils.data.DataLoader(mnist_train_data,
                                                 batch_size=self.batch_size,
                                                 shuffle=True,
                                                 num_workers=8)
-    mnist_test_data = MNIST('mnist', train=False,
+    mnist_test_data = EMNIST('emnist', split="byclass", train=False,
                              download=True, transform=ToTensor())
     self.test_data_loader = torch.utils.data.DataLoader(mnist_test_data,
                                                 batch_size=self.batch_size,
@@ -159,14 +159,13 @@ class CNN(nn.Module):
     print('total loss %.3f' % ep_loss,
                 'accuracy %.3f' % np.mean(ep_acc))
 
-"""
+
 if __name__ == '__main__':
-  network = CNN(lr=0.001, batch_size=128, epochs=25)
+  network = CNNE(lr=0.001, batch_size=128, epochs=100)
   network._train()
-  torch.save(network.state_dict(),"CNN-weights.pt")
+  torch.save(network.state_dict(),"CNNE-weights.pt")
   plt.plot(network.loss_history)
   plt.show()
   plt.plot(network.acc_history)
   plt.show()
   network._test()
-"""

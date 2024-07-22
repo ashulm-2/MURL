@@ -63,7 +63,7 @@ def CropImage(file):
   #im1.show()
         
 
-CropImage("testing3.png")
+#CropImage("testing3.png")
 
 
 
